@@ -9,6 +9,7 @@ all curl methods accepts
   auth    = "Basic request auth, 'user:pass', or {"user", "pass"}" (string/array)
   form    = "request form" (table)
   raw     = "any additonal curl args, it must be an array/list." (array)
+  socket  = "UNIX socket to use for the request." (string)
   dry_run = "whether to return the args to be ran through curl." (boolean)
   output  = "where to download something." (filepath)
 
@@ -177,6 +178,13 @@ parse.accept_header = function(s)
   return { "-H", "Accept: " .. s }
 end
 
+parse.socket = function(s)
+  if not s then
+    return
+  end
+  return { "--unix-socket", s }
+end
+
 -- Parse Request -------------------------------------------
 ------------------------------------------------------------
 parse.request = function(opts)
@@ -213,6 +221,7 @@ parse.request = function(opts)
   append(parse.form(opts.form))
   append(parse.file(opts.in_file))
   append(parse.auth(opts.auth))
+  append(parse.socket(opts.socket))
   append(opts.raw)
   if opts.output then
     table.insert(result, { "-o", opts.output })
